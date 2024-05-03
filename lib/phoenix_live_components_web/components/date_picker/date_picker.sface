@@ -1,0 +1,79 @@
+<div class={"border h-7 flex flex-row flex-wrap items-center justify-center rounded shadow-card w-full relative",
+            "border-gray-300": is_valid(@required,@calendar_value),
+            "border-red-200": !is_valid(@required,@calendar_value)
+            }
+    phx-click-away="toggle-close"
+    phx-target={@myself}
+    :hook="DatePickerChange"
+    data-name={@name}
+    id={"picker-#{@id}"}
+>
+  <div class="flex flex-col px-2 tracking-wide w-full" >
+     <div class="flex flex-row items-center space-x-2 w-full" >
+         <div  class="w-full flex flex-col">
+           <input type="hidden" value={Jason.encode!(Calendar.calendar_value_to_search_query(@calendar_value))} name={@name} >
+           <input class={"bg-transparent outline-none h-full w-full text-#{@text_align} text-sm placeholder-gray-400"}
+                   placeholder={@placeholder}
+                   readonly={@readonly}
+                   value={Calendar.format_calendar_value(@calendar_value, @date_format_string, @mode)}
+            />
+         </div>
+
+         <div :show={show_clear_opt(@calendar_value,@required)}>
+             <button type="button" class="flex cursor-pointer w-5 h-5 outline-none focus:outline-none"
+                     :on-click="clear">
+                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+             </button>
+         </div>
+
+         <div class="flex items-center">
+            <button type="button" class="cursor-pointer w-5 h-5 outline-none focus:outline-none"
+                    phx-click={get_icon_action(@mode)}
+                    phx-value-shown_calendar={!@shown_calendar}
+                    phx-value-show_range_options={!@show_range_options}
+                    phx-value-readonly={@readonly}
+                    phx-target={@myself}
+            >
+                <svg class="text-gray-400 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+            </button>
+         </div>
+     </div>
+    {#if (@show_range_options == true) && (@mode == "range") }
+      <div class="range-options-div absolute bg-white flex flex-col mt-5 right-0 self:flexEnd shadow shadow-box top:0 z-40 rounded-md p-1" id="range-options">
+          {#for range <- @range_options}
+              <div
+                  class={"cursor-pointer w-full border-gray-100 border-b hover:text-white rounded-md hover:bg-#{@suffix_hover_class}" }
+                  phx-click="select-range"
+                  phx-value-key={range["key"]}
+                  phx-target={@myself}
+              >
+                <div class="flex w-full items-center px-2 py-1.5 border-transparent border-l-2 relative">
+                  <div class="w-full items-center flex justify-between">
+                        <div class="mx-2 leading-5 text-base sm:text-sm">{range["label"]}</div>
+                  </div>
+                </div>
+              </div>
+          {/for}
+      </div>
+    {#elseif @shown_calendar }
+        <div class="calendar-div w-full relative " id="calendar-div">
+            <div class={"absolute shadow top-100 bg-white w-auto right-0 rounded z-10", "right-0": !@left, "left-0": @left}}  phx-click-away="toggle_calendar" phx-target={@myself} >
+                <Calendar
+                        id={"date-picker-calendar-#{@id}"}
+                        parent_socket={__MODULE__}
+                        parent_id={@id}
+                        start_date={start_date_value(@calendar_value)}
+                        end_date={end_date_value(@calendar_value)}
+                        {=@mode}
+                        {=@min_date}
+                        {=@max_date}
+                        {=@date_format_string}
+                        {=@calendar_value}
+                        {=@name}
+                        {=@locale}
+                ></Calendar>
+            </div>
+        </div>
+   {/if}
+  </div>
+</div>

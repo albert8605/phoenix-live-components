@@ -1,0 +1,107 @@
+<div class={"shadow top-100 bg-white right-0 rounded z-10 right-0 text-#{@text_size} w-full h-full"}
+     phx-click-away="change_view_mode"
+     phx-value-view_mode={"years"}
+     phx-value-start_date={@start_date}
+     phx-target={@myself}
+     phx-value-mode={@mode}
+     :hook="CalendarHooks"
+>
+  <header class="flex items-center">
+    <div class="flex flex-grow flex-row flex-wrap px-1 text-left">
+      <span
+              class="cursor-pointer px-4 py-1 rounded-lg text-base md:text-sm text-xs font-semibold text-gray-800 leading-5 font-semibold tracking-wide focus:outline-none hover:bg-gray-100"
+             phx-click="change_view_mode"
+             phx-value-view_mode={@view_mode}
+             phx-value-start_date={@start_date}
+             phx-target={@myself}
+      >
+        {get_header_text(@view_mode, @month_shown, @year_shown, @years_rows, @locale)}
+      </span>
+    </div>
+    <div class="flex md:flex-row md:flex-no-wrap px-1 text-right ">
+        <span
+            class="p-2 inline-block text-sm bg-white rounded-full text-gray-800 focus:outline-none hover:bg-gray-100"
+                phx-click="back-selection"
+                phx-value-month_shown={@month_shown}
+                phx-value-year_shown={@year_shown}
+                phx-value-years_rows={@years_rows.first}
+                phx-value-date_shown={@date_shown}
+                phx-value-view_mode={@view_mode}
+                phx-target={@myself}
+        >
+          <svg class="w-4 h-4 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        </span>
+        <span
+            class="p-2 inline-block text-sm bg-white rounded-full text-gray-800 focus:outline-none hover:bg-gray-100"
+                phx-click="forward-selection"
+                phx-value-month_shown={@month_shown}
+                phx-value-year_shown={@year_shown}
+                phx-value-years_rows={@years_rows.last}
+                phx-value-date_shown={@date_shown}
+                phx-value-view_mode={@view_mode}
+                phx-target={@myself}
+        >
+            <svg class="w-4 h-4 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        </span>
+    </div>
+  </header>
+  {!-- # MODE: default --}
+
+  {#case @view_mode}
+    {#match "default"}
+        <div class="grid grid-cols-7 text-center lg:px-2 md:px-0.5" >
+            {#for day_name <- Helpers.get_days_map(@locale)}
+                <div class="lg:px-1.5 pt-1 pb-5 border-0 text-gray-500 sm:p-0 "><span class="sm:text-xxs lg:text-sm"> {day_name["short_name"]} </span></div>
+            {/for}
+        </div>
+        <div class="grid grid-cols-7 text-center lg:px-2 md:px-0.5" name="default-grid-view">
+                {#for day <- @week_rows }
+                        <div class={day_row_class(day,@start_date,@end_date,@today,@min_date,@max_date)}
+                                id={"available-day-#{day}"}
+                                phx-click="select_day"
+                                phx-value-mode={@mode}
+                                phx-value-date={day}
+                                phx-value-start_date={@start_date || "empty"}
+                                phx-value-end_date={@end_date || "empty"}
+                                phx-value-disabled={is_enable_day(day,@min_date,@max_date)}
+                                phx-target={@myself}
+                        >
+                            <span class="text-xxs sm:text-sm">{Timex.format!(day, "%e", :strftime)}</span>
+                        </div>
+                {/for}
+        </div>
+
+    {#match "monthly"}
+        <div class="grid grid-cols-3 text-center h-4/5 px-2">
+            {#for month <- month_rows(@locale)}
+                <span class={month_row_class(month,@today,@start_date,@date_shown,@min_date,@max_date)}
+                        phx-click="select_month"
+                        phx-value-mode={@mode}
+                        phx-value-month={month["index"]}
+                        phx-value-start_date={@start_date}
+                        phx-value-date_shown={@date_shown}
+                        phx-value-disabled={!is_enabled_month(month,@date_shown,@min_date,@max_date)}
+                        phx-target={@myself}
+                >
+                    { month["short_name"] }
+                </span>
+            {/for}
+        </div>
+    {#match _}
+        <div class="grid grid-cols-3 text-center h-4/5 px-2">
+            {#for year <- @years_rows }
+            <span class={year_row_class(year,@today,@start_date,@date_shown,@min_date,@max_date)}
+                    phx-click="select_year"
+                    phx-value-mode={@mode}
+                    phx-value-year={year}
+                    phx-value-start_date={@start_date}
+                    phx-value-date_shown={@date_shown}
+                    phx-value-disabled={!is_enabled_year(year,@date_shown,@min_date,@max_date)}
+                    phx-target={@myself}
+            >
+                { year }
+            </span>
+            {/for}
+        </div>
+  {/case}
+</div>

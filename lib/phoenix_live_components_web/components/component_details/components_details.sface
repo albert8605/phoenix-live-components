@@ -1,0 +1,22 @@
+<div class=" flex flex-col md:flex-row md:flex-wrap font-bold h-full leading-6 right-0 top-0 w-3/4 p-4">
+
+    <div class="flex flex-row md:w-1/4 h-fit">
+        {#case @component_shown }
+            {#match "calendar"} <Calendar id="simple_calendar" name="simple_calendar" {=@locale} />
+
+            {#match "simple_date_picker"} <DatePicker id="simple_date_picker" name="simple_date_picker" {=@locale} />
+
+            {#match "range_date_picker"} <DatePicker id="simple_date_picker" name="simple_date_picker" mode="range" {=@locale} />
+
+            {#match _}
+        {/case}
+    </div>
+
+    <div class="flex flex-col justify-left p-4 space-y-8 w-3/4">
+        {raw(resume(@component_shown,@locale))}
+    </div>
+
+
+</div>
+
+

@@ -1,0 +1,46 @@
+<div class="flex flex-row max-w-screen h-screen max-h-screen overflow-y-auto">
+  <div class="flex flex-col font-bold h-full leading-6 left-0 top-0 w-1/4 bg-gray-200 p-4">
+
+    <div id="page_icom" class="flex items-center justify-center shadow-lg text-lg py-4">
+      Components List
+
+      <div class="flex flex-row-reverse h-full items-end w-1/3">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/7/7c/Spain_flag_icon.svg" style="max-width: 300px; height: 2rem; margin: 0px; width: 2rem;" class="hover:cursor-pointer" phx-click="change_locale" phx-value-lang="es">
+        <img src={images_url("eng_flag.svg")} style="max-width: 300px; height: 2rem; margin: 0px; width: 2rem;" class="hover:cursor-pointer"  phx-click="change_locale" phx-value-lang="en">
+
+      </div>
+    </div>
+
+    <div id="search_input" class="flex items-center justify-center shadow-lg p-4">
+
+      <div class="relative input-group">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          <svg class="text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg" width="12.879" height="13.5" viewBox="0 0 12.879 13.5"><path id="busqueda" d="M10.465,5.484A5.648,5.648,0,0,1,9.458,8.718l3.185,3.34a.874.874,0,0,1,0,1.194.78.78,0,0,1-1.14,0L8.319,9.913a5.045,5.045,0,0,1-3.087,1.055A5.362,5.362,0,0,1,0,5.484,5.362,5.362,0,0,1,5.232,0,5.362,5.362,0,0,1,10.465,5.484ZM5.232,9.28a3.713,3.713,0,0,0,3.622-3.8,3.713,3.713,0,0,0-3.622-3.8,3.713,3.713,0,0,0-3.622,3.8A3.713,3.713,0,0,0,5.232,9.28Z" fill="#004393"></path></svg>
+        </div>
+        <input id="search"
+               name="search"
+               type="text"
+               required
+               class="pl-10 block w-full rounded-md border-cyan-200 shadow-sm focus:border-primary-300 sm:text-sm focus:shadow-input-focus-blue input-group_input"
+               :on-keyup="search_keyup"
+        >
+        <label for="search" class="input-group_label">Search</label>
+      </div>
+    </div>
+
+    <div id="components_list" class="flex items-center justify-left shadow-lg text-sm sm:text-sm p-4">
+      <ul class="w-full h-full">
+        {#for component <- @component_list }
+          <li class="hover:bg-sky-500 hover:text-white py-2 w-full px-1 rounded rounded-md">
+            <button type="button" phx-click="show_component" value={component["name"]} > {component["title"]} </button>
+          </li>
+        {/for}
+      </ul>
+    </div>
+
+  </div>
+
+  <ComponentsDetails id="home-component-details" {=@locale} {=@component_shown} ></ComponentsDetails>
+
+
+</div>
