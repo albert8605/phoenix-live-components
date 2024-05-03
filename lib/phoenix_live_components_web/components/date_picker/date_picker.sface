@@ -13,7 +13,7 @@
          <div  class="w-full flex flex-col">
            <input type="hidden" value={Jason.encode!(Calendar.calendar_value_to_search_query(@calendar_value))} name={@name} >
            <input class={"bg-transparent outline-none h-full w-full text-#{@text_align} text-sm placeholder-gray-400"}
-                   placeholder={@placeholder}
+                   placeholder={placeholder_locale(@locale)}
                    readonly={@readonly}
                    value={Calendar.format_calendar_value(@calendar_value, @date_format_string, @mode)}
             />
@@ -40,7 +40,7 @@
      </div>
     {#if (@show_range_options == true) && (@mode == "range") }
       <div class="range-options-div absolute bg-white flex flex-col mt-5 right-0 self:flexEnd shadow shadow-box top:0 z-40 rounded-md p-1" id="range-options">
-          {#for range <- @range_options}
+          {#for range <- range_options(@locale)}
               <div
                   class={"cursor-pointer w-full border-gray-100 border-b hover:text-white rounded-md hover:bg-#{@suffix_hover_class}" }
                   phx-click="select-range"

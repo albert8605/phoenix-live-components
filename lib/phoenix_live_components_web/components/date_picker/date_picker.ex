@@ -1,12 +1,13 @@
 defmodule PhoenixLiveComponentsWeb.Components.DatePicker do
   use Surface.LiveComponent
 
+  import PhoenixLiveComponentsWeb.Components.DatePicker.Locale, only: [placeholder_locale: 1]
+
   alias PhoenixLiveComponentsWeb.Components.{Calendar, DatePicker.RangeHelper}
 
   prop name, :string, required: true
   prop calendar_value, :any, default: nil
   prop date_format_string, :string, default: "{0D}-{0M}-{YYYY}"
-  prop placeholder, :string, default: "Seleccione"
   prop mode, :string,  values: ["simple", "range"], default: "simple"
   prop left, :boolean, default: false
   prop required, :boolean, default: false
@@ -14,7 +15,7 @@ defmodule PhoenixLiveComponentsWeb.Components.DatePicker do
   prop min_date, :datetime, default: nil
   prop max_date, :datetime, default: nil
   prop text_align, :string, default: "right"
-  prop range_options, :list, default: RangeHelper.default_range()
+  prop range_options, :list, default: RangeHelper.default_range("en")
   prop suffix_hover_class, :string, default: "cyan-400"
 
   prop shown_calendar, :boolean, default: false
@@ -38,11 +39,13 @@ defmodule PhoenixLiveComponentsWeb.Components.DatePicker do
 
   def handle_event("select-range", %{"key" => "custom"}, socket), do: {:noreply, assign(socket, show_range_options: false) |> assign(shown_calendar: true)}
   def handle_event("select-range", %{"key" => key}, socket) do
+    locale = socket.assigns.locale
+    calendar_value = RangeHelper.locale_date_by_range_map(key,locale)
     {:noreply,
-      assign(socket, calendar_value: RangeHelper.date_by_range_mape(key,"es"))
+      assign(socket, calendar_value: calendar_value)
       |> assign(show_range_options: false)
       |> assign(shown_calendar: false)
-      |> push_event("change_calendar_value", %{"name" => socket.assigns.name, "value" =>  Jason.encode!(RangeHelper.date_by_range_map(key)) })
+      |> push_event("change_calendar_value", %{"name" => socket.assigns.name, "value" =>  Jason.encode!(calendar_value) })
     }
   end
 
@@ -68,5 +71,8 @@ defmodule PhoenixLiveComponentsWeb.Components.DatePicker do
   defp show_clear_opt(_, true), do: false
   defp show_clear_opt(value, _ ) when is_binary(value), do: String.trim(value) != ""
   defp show_clear_opt(value, _) when is_map(value), do: value != Map.new
+
+  defp range_options(locale), do: RangeHelper.default_range(locale)
+
 
 end

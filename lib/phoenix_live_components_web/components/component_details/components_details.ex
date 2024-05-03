@@ -22,7 +22,6 @@ defmodule PhoenixLiveComponentsWeb.Components.ComponentsDetails do
   defp resume("calendar", "en") do
    """
       Component that renders a simple calendar, with the option to navigate between dates from 1009 onwards.
-      from the year 1009 onwards.
       <br>
       <ul class="list-disc pl-10" >
         <li> Allows to be embedded in other components</li>

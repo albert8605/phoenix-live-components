@@ -12,36 +12,24 @@ defmodule PhoenixLiveComponentsWeb.Components.DatePicker.RangeHelper do
    @this_year %{"key" => "this_year", "label" =>  "This Year", "amount" => 0, "in" => :years}
    @custom %{"key" => "custom", "label" =>  "Custom"}
 
-  @default [
-  @today,
-  @yesterday,
-  @last_7days,
-  @last_30days,
-  @this_month,
-  @last_month,
-  @this_year,
-  @custom,
-  ]
-
-  def default_range(), do: @default
   def default_range(locale), do: Locale.map_by_lang(locale)
 
-  def get_map_by_key(key), do: Enum.find(@default, & &1["key"] == key)
 
-  def date_by_range_mape(range_map, locale) do
+  def locale_date_by_range_map(range_map, locale) do
     Locale.map_by_key(range_map,locale)
     |> date_by_range_map(Date.utc_today())
   end
 
   def date_by_range_map(range_map, to_date \\ Date.utc_today())
-  def date_by_range_map("today", _), do: date_by_range_map(@today)
-  def date_by_range_map("yesterday", _), do: date_by_range_map(@yesterday, Timex.shift(Date.utc_today(), days: -1 ))
-  def date_by_range_map("last_7days", _), do: date_by_range_map(@last_7days)
-  def date_by_range_map("last_30days", _), do: date_by_range_map(@last_30days)
-  def date_by_range_map("this_month", _), do: Timex.beginning_of_month(Date.utc_today()) |> range_by_today(Timex.end_of_month(Date.utc_today()) )
-  def date_by_range_map("last_month", _), do: range_by_today(Timex.shift(Timex.beginning_of_month(Date.utc_today()), months: -1), Timex.shift(Timex.beginning_of_month(Date.utc_today()), days: -1))
-  def date_by_range_map("this_year", _), do: Timex.beginning_of_year(Date.utc_today()) |> range_by_today(Timex.end_of_year(Date.utc_today()))
+
+  def date_by_range_map(%{"key" => "yesterday"} = date_map, _), do: Map.put(date_map, "key","") |> date_by_range_map(Timex.shift(Date.utc_today(), days: -1 )) |> IO.inspect()
+  def date_by_range_map(%{"key" => "this_month"}, to_date), do: Timex.beginning_of_month(Date.utc_today()) |> range_by_today(Timex.end_of_month(Date.utc_today()) )
+  def date_by_range_map(%{"key" => "last_month"}, to_date), do: range_by_today(Timex.shift(Timex.beginning_of_month(Date.utc_today()), months: -1), Timex.shift(Timex.beginning_of_month(Date.utc_today()), days: -1))
+  def date_by_range_map(%{"key" => "this_year"}, to_date), do: Timex.beginning_of_year(Date.utc_today()) |> range_by_today(Timex.end_of_year(Date.utc_today()))
+
   def date_by_range_map("custom", _), do: nil
+  def date_by_range_map(%{"key" => "custom"}, _), do: nil
+
   def date_by_range_map(%{"in" => :days} = range_map, to_date), do: Timex.shift(Date.utc_today(), days: range_map["amount"] ) |> range_by_today(to_date)
   def date_by_range_map(%{"in" => :months} = range_map, to_date), do: Timex.shift(Date.utc_today(), months: range_map["amount"] ) |> range_by_today(to_date)
   def date_by_range_map(%{"in" => :years} = range_map, to_date), do: Timex.shift(Date.utc_today(), years: range_map["amount"] ) |> range_by_today(to_date)
