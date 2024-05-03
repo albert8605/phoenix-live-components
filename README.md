@@ -15,6 +15,8 @@ In order to run this project alone, we need to install some dependencies in our 
 
 Then we need to run some command
 - cd path to project
+- mix deps.get
+- mix deps.compile
 - mix phx.server
 
 
